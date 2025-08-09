@@ -36,18 +36,24 @@ func main() {
 			return c.Status(400).JSON(fiber.Map{"error": "Json body is requierd"})
 		}
 
-		todo.ID = len(todos) + 1
-		todos = append(todos, *todo)
-
-		var x int = 5
-
-		var p *int = &x
-
-		fmt.Println(p)  //0X0001
-		fmt.Println(*p) //5
-
 		return c.Status(201).JSON(todo)
 
 	})
+
+	//update todos
+
+	app.Patch("/api/todos/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
+
+		for i, todo := range todos {
+			if fmt.Sprint(todo.ID) == id {
+				todos[i].Completed = true
+				return c.Status(200).JSON(todos[i])
+			}
+		}
+		return c.Status(200).JSON(fiber.Map{"error": "Json body is required"})
+
+	})
+
 	log.Fatal(app.Listen(":5000"))
 }
